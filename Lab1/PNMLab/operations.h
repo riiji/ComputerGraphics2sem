@@ -15,16 +15,9 @@ public:
 template <class T>
 void operations<T>::turn_left(vector<vector<T>>& obj)
 {
-	int height = obj.size();
-	int width = obj.front().size();
-
-	vector<vector<T>> result = vector<vector<T>>(width, vector<T>(height));
-
-	for (int i = 0;i < height;++i)
-		for (int j = 0;j < width;++j)
-			result[j][i] = obj[i][j];
-
-	obj = result;
+	turn_right(obj);
+	turn_right(obj);
+	turn_right(obj);
 }
 
 template <class T>

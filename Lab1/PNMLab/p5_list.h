@@ -7,7 +7,7 @@ using namespace std;
 class p5_list final : public IPixel_list
 {
 public:
-	vector<vector<char>> pixels;
+	vector<vector<unsigned char>> pixels;
 	
 	p5_list(int width, int height);
 	~p5_list() override;

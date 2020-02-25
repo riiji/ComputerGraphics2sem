@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include "IPixel_list.h"
 #include <vector>
-
+typedef tuple<unsigned char, unsigned char, unsigned char> p6_data;
 using namespace std;
 
 class p6_list final : public IPixel_list
 {
 public:
-	vector<vector<tuple<char, char, char>>> pixels;
+	vector<vector<p6_data>> pixels;
 	
 	p6_list(int width, int height);
 	~p6_list() override;

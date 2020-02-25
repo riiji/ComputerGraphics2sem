@@ -7,10 +7,13 @@ using namespace std;
 
 p5_list::p5_list(const int width, const int height)
 {
+	if (width <= 0 || height <= 0)
+		throw exception("invalid height/width value");
+	
 	this->height = height;
 	this->width = width;
 
-	pixels = vector<vector<char>>(height, vector<char>(width));
+	pixels = vector<vector<unsigned char>>(height, vector<unsigned char>(width));
 }
 
 p5_list::~p5_list()
@@ -22,7 +25,7 @@ void p5_list::inverse_pixel()
 {
 	for (int i = 0;i < height;++i)
 		for (int j = 0;j < width;++j)
-			pixels[i][j] = CHAR_MAX - pixels[i][j];
+			pixels[i][j] = UCHAR_MAX - pixels[i][j];
 }
 
 ostream& p5_list::operator<<(ostream& os)
@@ -60,20 +63,20 @@ istream& p5_list::operator>>(istream& is)
 
 void p5_list::turn_left()
 {
-	operations<char>::turn_left(pixels);
+	operations<unsigned char>::turn_left(pixels);
 }
 
 void p5_list::turn_right()
 {
-	operations<char>::turn_right(pixels);
+	operations<unsigned char>::turn_right(pixels);
 }
 
 void p5_list::horizontal_reflect()
 {
-	operations<char>::horizontal_reflect(pixels);
+	operations<unsigned char>::horizontal_reflect(pixels);
 }
 
 void p5_list::vertical_reflect()
 {
-	operations<char>::vertical_reflect(pixels);
+	operations<unsigned char>::vertical_reflect(pixels);
 }

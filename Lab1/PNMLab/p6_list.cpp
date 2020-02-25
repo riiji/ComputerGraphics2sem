@@ -3,13 +3,14 @@
 #include <iostream>
 #include "operations.h"
 #include <stack>
+typedef tuple<unsigned char, unsigned char, unsigned char> p6_data;
 using namespace std;
 
 p6_list::p6_list(const int width, const int height)
 {
 	this->height = height;
 	this->width = width;
-	pixels = vector<vector<tuple<char, char, char>>>(height, vector<tuple<char, char, char>>(width));
+	pixels = vector<vector<p6_data>>(height, vector<p6_data>(width));
 }
 
 p6_list::~p6_list()
@@ -27,9 +28,9 @@ void p6_list::inverse_pixel()
 			char g = get<1>(pixels[i][j]);
 			char b = get<2>(pixels[i][j]);
 
-			r = CHAR_MAX - r;
-			g = CHAR_MAX - g;
-			b = CHAR_MAX - b;
+			r = UCHAR_MAX - r;
+			g = UCHAR_MAX - g;
+			b = UCHAR_MAX - b;
 
 			pixels[i][j] = make_tuple(r, g, b);
 		}
@@ -57,15 +58,15 @@ istream& p6_list::operator>>(istream& is)
 {
 	//skip endl symbol
 	is.get();
-	
+
 	for (int i = 0;i < height;++i)
 	{
 		for (int j = 0;j < width;++j)
 		{
-			char r,g,b;
+			char r, g, b;
 			is >> noskipws >> r >> g >> b;
 
-			pixels[i][j] = make_tuple(r,g,b);
+			pixels[i][j] = make_tuple(r, g, b);
 		}
 	}
 
@@ -74,20 +75,20 @@ istream& p6_list::operator>>(istream& is)
 
 void p6_list::turn_left()
 {
-	operations<tuple<char, char, char>>::turn_left(pixels);
+	operations<p6_data>::turn_left(pixels);
 }
 
 void p6_list::turn_right()
 {
-	operations<tuple<char, char, char>>::turn_right(pixels);
+	operations<p6_data>::turn_right(pixels);
 }
 
 void p6_list::horizontal_reflect()
 {
-	operations<tuple<char, char, char>>::horizontal_reflect(pixels);
+	operations<p6_data>::horizontal_reflect(pixels);
 }
 
 void p6_list::vertical_reflect()
 {
-	operations<tuple<char, char, char>>::vertical_reflect(pixels);
+	operations<p6_data>::vertical_reflect(pixels);
 }

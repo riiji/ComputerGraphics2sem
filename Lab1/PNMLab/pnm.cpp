@@ -32,8 +32,15 @@ istream& pnm::operator>>(istream& is)
 	{
 		table_data = new p6_list(width, height);
 	}
+	else
+	{
+		throw exception("invalid header");
+	}
 
-	table_data->operator>>(is);
+	if (magic != 255)
+		throw exception("invalid magic value");
 	
+	table_data->operator>>(is);
+
 	return is;
 }
