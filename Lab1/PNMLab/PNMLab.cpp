@@ -12,9 +12,8 @@ int main(int argc, char* argv[])
 		pnm* pic = new pnm();
 
 		ifstream is(argv[1], ios::binary);
-		ofstream os(argv[2], ios::binary);
 
-		if (!is.is_open() || !os.is_open())
+		if (!is.is_open())
 			throw exception("invalid filename input");
 
 		pic->operator>>(is);
@@ -42,6 +41,11 @@ int main(int argc, char* argv[])
 			break;
 		default: throw exception("invalid command input");
 		}
+
+		ofstream os(argv[2], ios::binary);
+
+		if (!os.is_open())
+			throw exception("can't create output file");
 
 		pic->operator<<(os);
 	}

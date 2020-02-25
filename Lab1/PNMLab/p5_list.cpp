@@ -45,7 +45,17 @@ istream& p5_list::operator>>(istream& is)
 {
 	// skip endl symbol
 	is.get();
+
+	//check valid
+	const int pos = is.tellg();
+	is.seekg(0, SEEK_END);
+	const int end_pos = is.tellg();
+	const int size = end_pos - pos;
+	is.seekg(pos, SEEK_SET);
 	
+	if (size != height * width)
+		throw exception("invalid file data");
+
 	for (int i = 0;i < height;++i)
 	{
 		for (int j = 0;j < width;++j)
