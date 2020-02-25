@@ -1,43 +1,46 @@
 #include <iostream>
 #include <fstream>
-#include "base_pnm.h"
-#include "p5_pixel.h"
-#include "p6_pixel.h"
+#include "pnm.h"
+#include "operations.h"
+
+using namespace std;
 
 int main(int argc, char* argv[])
 {
-	base_pnm pnm;
+	pnm *pic = new pnm();
 
-	ifstream is(argv[1]);
-	ofstream os(argv[2]);
+	ifstream is(argv[1], ios::binary);
+	ofstream os(argv[2], ios::binary);
 
 	if (!is.is_open() || !os.is_open())
 		throw exception("invalid filename input");
 	
-	pnm.operator>>(is);
+	pic->operator>>(is);
 
-	auto command_value = stoi(argv[3]);
+	const auto command_value = stoi(argv[3]);
 
 	switch (command_value)
 	{
 	case 0:
-		pnm.inverse_pixels();
+		pic->table_data->inverse_pixel();
 		break;
 	case 1:
-		pnm.horizontal_reflect();
+		pic->table_data->horizontal_reflect();
 		break;
 	case 2:
-		pnm.vertical_reflect();
+		pic->table_data->vertical_reflect();
 		break;
 	case 3:
-		pnm.turn_right();
+		pic->table_data->turn_right();
+		pic->swap();
 		break;
 	case 4:
-		pnm.turn_left();
+		pic->table_data->turn_left();
+		pic->swap();
 		break;
 	default: throw exception("invalid command input");
 	}
 
-	pnm.operator<<(os);
+	pic->operator<<(os);
 }
 

@@ -1,0 +1,79 @@
+﻿#include "p5_list.h"
+#include <iostream>
+#include "operations.h"
+#include <tuple>
+
+using namespace std;
+
+p5_list::p5_list(const int width, const int height)
+{
+	this->height = height;
+	this->width = width;
+
+	pixels = vector<vector<char>>(height, vector<char>(width));
+}
+
+p5_list::~p5_list()
+{
+	pixels.clear();
+}
+
+void p5_list::inverse_pixel()
+{
+	for (int i = 0;i < height;++i)
+		for (int j = 0;j < width;++j)
+			pixels[i][j] = CHAR_MAX - pixels[i][j];
+}
+
+ostream& p5_list::operator<<(ostream& os)
+{
+	for (int i = 0;i < height;++i)
+	{
+		for (int j = 0;j < width;++j)
+		{
+			os.put(pixels[i][j]);
+		}
+	}
+
+	return os;
+}
+
+istream& p5_list::operator>>(istream& is)
+{
+	// skip endl symbol
+	is.get();
+	
+	for (int i = 0;i < height;++i)
+	{
+		for (int j = 0;j < width;++j)
+		{
+			char amount;
+			is.get(amount);
+
+			pixels[i][j] = amount;
+		}
+	}
+
+	return is;
+
+}
+
+void p5_list::turn_left()
+{
+	operations<char>::turn_left(pixels);
+}
+
+void p5_list::turn_right()
+{
+	operations<char>::turn_right(pixels);
+}
+
+void p5_list::horizontal_reflect()
+{
+	operations<char>::horizontal_reflect(pixels);
+}
+
+void p5_list::vertical_reflect()
+{
+	operations<char>::vertical_reflect(pixels);
+}

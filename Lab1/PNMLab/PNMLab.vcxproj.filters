@@ -18,27 +18,30 @@
     <ClCompile Include="PNMLab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="base_pnm.cpp">
+    <ClCompile Include="p6_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p5_pixel.cpp">
+    <ClCompile Include="p5_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p6_pixel.cpp">
+    <ClCompile Include="pnm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="base_pnm.h">
+    <ClInclude Include="IPixel_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="p5_pixel.h">
+    <ClInclude Include="p6_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="p6_pixel.h">
+    <ClInclude Include="p5_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IPixel.h">
+    <ClInclude Include="operations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pnm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

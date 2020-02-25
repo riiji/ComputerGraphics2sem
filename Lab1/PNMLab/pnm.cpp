@@ -1,0 +1,39 @@
+﻿#include "pnm.h"
+#include <iostream>
+#include "p5_list.h"
+#include "p6_list.h"
+pnm::~pnm()
+{
+	delete table_data;
+}
+
+void pnm::swap()
+{
+	std::swap(width, height);
+	std::swap(table_data->height, table_data->width);
+}
+
+ostream& pnm::operator<<(ostream& os) const
+{
+	os << version << "\n" << width << " " << height << "\n" << magic << "\n";
+	table_data->operator<<(os);
+	return os;
+}
+
+istream& pnm::operator>>(istream& is)
+{
+	is >> version >> width >> height >> magic;
+
+	if(version=="P5")
+	{
+		table_data = new p5_list(width, height);
+	}
+	else if (version=="P6")
+	{
+		table_data = new p6_list(width, height);
+	}
+
+	table_data->operator>>(is);
+	
+	return is;
+}

@@ -88,7 +88,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -147,16 +147,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="base_pnm.cpp" />
-    <ClCompile Include="p5_pixel.cpp" />
-    <ClCompile Include="p6_pixel.cpp" />
+    <ClCompile Include="p5_list.cpp" />
+    <ClCompile Include="p6_list.cpp" />
+    <ClCompile Include="pnm.cpp" />
     <ClCompile Include="PNMLab.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IPixel.h" />
-    <ClInclude Include="base_pnm.h" />
-    <ClInclude Include="p5_pixel.h" />
-    <ClInclude Include="p6_pixel.h" />
+    <ClInclude Include="operations.h" />
+    <ClInclude Include="IPixel_list.h" />
+    <ClInclude Include="p5_list.h" />
+    <ClInclude Include="p6_list.h" />
+    <ClInclude Include="pnm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
