@@ -9,6 +9,9 @@ int main(int argc, char* argv[])
 {
 	try
 	{
+		if (argc != 4)
+			throw exception("invalid arguments count");
+
 		pnm* pic = new pnm();
 
 		ifstream is(argv[1], ios::binary);
