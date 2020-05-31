@@ -15,7 +15,7 @@ public:
 	virtual void turn_right() = 0;
 	virtual void horizontal_reflect() = 0;
 	virtual void vertical_reflect() = 0;
-
+	
 	virtual ostream& operator<<(ostream& os) = 0;
 	virtual istream& operator>>(istream& is) = 0;
 };

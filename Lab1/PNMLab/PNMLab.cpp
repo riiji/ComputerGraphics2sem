@@ -1,60 +1,36 @@
 #include <iostream>
 #include <fstream>
+#include <tuple>
+
 #include "pnm.h"
 #include "operations.h"
+#include "extensions.h"
+#include "p5_list.h"
+#include <string>
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
-	try
-	{
-		if (argc != 4)
-			throw exception("invalid arguments count");
+	pnm pic = pnm();
 
-		pnm* pic = new pnm();
+	
+	pic.height = 1200;
+	pic.width = 700;
+	pic.magic = 255;
+	pic.version = "P5";
 
-		ifstream is(argv[1], ios::binary);
+	vector<vector<unsigned char>> l(1200, vector<unsigned char>(700, 255));
 
-		if (!is.is_open())
-			throw exception("invalid filename input");
+	auto list = new p5_list(l);
 
-		pic->operator>>(is);
+	list->draw_horizontal_gradient();
+	list->jjn_dithering(1);
 
-		const auto command_value = stoi(argv[3]);
+	pic.table_data = new p5_list(*list);
 
-		switch (command_value)
-		{
-		case 0:
-			pic->table_data->inverse_pixel();
-			break;
-		case 1:
-			pic->table_data->horizontal_reflect();
-			break;
-		case 2:
-			pic->table_data->vertical_reflect();
-			break;
-		case 3:
-			pic->table_data->turn_right();
-			pic->swap();
-			break;
-		case 4:
-			pic->table_data->turn_left();
-			pic->swap();
-			break;
-		default: throw exception("invalid command input");
-		}
-
-		ofstream os(argv[2], ios::binary);
-
-		if (!os.is_open())
-			throw exception("can't create output file");
-
-		pic->operator<<(os);
-	}
-	catch (exception e)
-	{
-		cout << e.what();
-	}
+	freopen("225HO.pgm", "wb", stdout);
+	pic.operator<<(cout);
 }
 
+	
