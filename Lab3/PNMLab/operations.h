@@ -12,9 +12,11 @@ public:
 	static void vertical_reflect(vector<vector<T>>& obj);
 	static void set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse, float gamma);
 	static T get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, float gamma);
+	template <typename color>
+	static void from_color_to_rgb(vector<vector<T>>& obj, T(*color)(T));
+	template <typename color>
+	static void from_rgb_to_color(vector<vector<T>>& obj, T(*color)(T));
 };
-
-
 
 template <class T>
 void operations<T>::turn_left(vector<vector<T>>& obj)
@@ -81,7 +83,7 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 		else {
 			srgb = 1.055f * std::powf(value, 1.0f / 2.4f) - 0.055f;
 		}
-		obj[y][x] = srgb*255;
+		obj[y][x] = srgb * 255;
 		return;
 	}
 
@@ -124,11 +126,43 @@ T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, f
 		else
 			linear = std::powf((linear + 0.055f) / 1.055f, 2.4f);
 
-		return linear*255.0f;
+		return linear * 255.0f;
 	}
 
 	if (reverse)
 		return powf(obj[x][y] / 255.0, gamma) * 255.0;
 	else
 		return powf(obj[y][x] / 255.0, gamma) * 255.0;
+}
+
+template<class T>
+template<typename color>
+inline void operations<T>::from_color_to_rgb(vector<vector<T>>& obj, T(*color)(T))
+{
+	int height = obj.size();
+	int width = obj.size();
+
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			obj[i][j] = color(obj[i][j]);
+		}
+	}
+}
+
+template<class T>
+template<typename color>
+inline void operations<T>::from_rgb_to_color(vector<vector<T>>& obj, T(*color)(T))
+{
+	int height = obj.size();
+	int width = obj.size();
+
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			obj[i][j] = color(obj[i][j]);
+		}
+	}
 }

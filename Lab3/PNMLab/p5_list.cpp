@@ -62,25 +62,31 @@ void p5_list::ez_line(double x1, double y1, double x2, double y2)
 	}
 }
 
-void p5_list::ez_line_width(double x0, double y0, double x1, double y1, double width, float gamma)
+void p5_list::ez_line_width(double x1, double y1, double x2, double y2, double width, float gamma)
 {
-	int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-	int dy = abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-	int err = dx - dy, e2, x2, y2;                          /* error value e_xy */
+	int dx = abs(x2 - x1);
+	int dy = abs(y2 - y1);
+	int error = dx - dy, error_diag, x2, y2;
 	float ed = dx + dy == 0 ? 1 : sqrt((float)dx * dx + (float)dy * dy);
 
-	for (width = (width + 1) / 2; ; ) {                                   /* pixel loop */
-		operations<unsigned char>::set_pixel(pixels, x0, y0, max((double)0, 255 * (abs(err - dx + dy) / ed - width + 1)), false, gamma);
-		e2 = err; x2 = x0;
-		if (2 * e2 >= -dx) {                                           /* x step */
-			for (e2 += dy, y2 = y0; e2 < ed * width && (y1 != y2 || dx > dy); e2 += dx)
+	bool sign_x = x1 < x2;
+	bool sign_y = y1 < y2;
+
+	for (width = (width + 1) / 2;;)
+	{
+		operations<unsigned char>::set_pixel(pixels, x1, y1, max((double)0, 255 * (abs(err - dx + dy) / ed - width + 1)), false, gamma);
+		e2 = err; x_0 = x1;
+		if (2 * e2 >= -dx) 
+		{
+			for (e2 += dy, y2 = y1; e2 < ed * width && (y1 != y2 || dx > dy); e2 += dx)
 				operations<unsigned char>::set_pixel(pixels, x0, y2 += sy, max((double)0, 255 * (abs(e2) / ed - width + 1)), false, gamma);
 			if (x0 == x1) break;
 			e2 = err; err -= dy; x0 += sx;
 		}
-		if (2 * e2 <= dy) {                                            /* y step */
-			for (e2 = dx - e2; e2 < ed * width && (x1 != x2 || dx < dy); e2 += dy)
-				operations<unsigned char>::set_pixel(pixels, x2 += sx, y0, max((double)0, 255 * (abs(e2) / ed - width + 1)), false, gamma);
+		if (2 * e2 <= dy) 
+		{
+			for (e2 = dx - e2; e2 < ed * width && (x1 != x_0 || dx < dy); e2 += dy)
+				operations<unsigned char>::set_pixel(pixels, x_0 += sx, y0, max((double)0, 255 * (abs(e2) / ed - width + 1)), false, gamma);
 			if (y0 == y1) break;
 			err += dx; y0 += sy;
 		}
@@ -187,7 +193,7 @@ void p5_list::random_dithering(float bit, float gamma)
 		for (int j = 0; j < width; ++j)
 		{
 			auto old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
-			auto new_pixel = old_pixel + (rand()%255) - 128;
+			auto new_pixel = old_pixel + (rand() % 255) - 128;
 
 			if (new_pixel > 255)
 				new_pixel = 255;
