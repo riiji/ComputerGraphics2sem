@@ -153,9 +153,12 @@
     <ClCompile Include="PNMLab.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="p5_color_conversion.h" />
+    <ClInclude Include="helper.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="IPixel_list.h" />
     <ClInclude Include="p5_list.h" />
+    <ClInclude Include="p6_color_conversion.h" />
     <ClInclude Include="p6_list.h" />
     <ClInclude Include="pnm.h" />
     <ClInclude Include="vector2d.h" />

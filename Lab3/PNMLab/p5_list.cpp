@@ -64,7 +64,7 @@ void p5_list::ez_line(double x1, double y1, double x2, double y2)
 
 void p5_list::ez_line_width(double x1, double y1, double x2, double y2, double width, float gamma)
 {
-	
+
 }
 
 void p5_list::draw_horizontal_gradient(float gamma)
@@ -79,7 +79,7 @@ void p5_list::draw_horizontal_gradient(float gamma)
 			pixels[i][j] = pixels[0][j];
 }
 
-void p5_list::base_dithering(vector<vector2d> offsets, float div_value, double bit, float gamma)
+void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 {
 	int height = pixels.size();
 	int width = pixels.front().size();
@@ -88,17 +88,27 @@ void p5_list::base_dithering(vector<vector2d> offsets, float div_value, double b
 	{
 		for (int j = 0; j < width; ++j)
 		{
-			auto old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
+			unsigned char old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
 
-			int np = round(pow(2, bit - 1) * (double)old_pixel / 255.0) * (255.0 / pow(2, bit - 1));
-			float err = (double)old_pixel - (double)np;
-			operations<unsigned char>::set_pixel(pixels, j, i, np, false, gamma);
+			float ap = trunc(powf(2.0f, bit) - 1.0f * (float)old_pixel / 255.0f);
+			float np = roundf((powf(2.0f, bit) - 1.0f) * (float)old_pixel / 255.0f) * (255.0f / (powf(2.0f, bit) - 1.0f));
+			float err = (float)old_pixel - np;
+			operations<unsigned char>::set_pixel(pixels, j, i, (unsigned char)np, false, gamma);
+
 
 			for (int k = 0; k < offsets.size(); ++k)
 			{
 				auto pixel = operations<unsigned char>::get_pixel(pixels, j + offsets[k].x, i + offsets[k].y, false, gamma);
-				double new_value = (double)pixel + err * ((double)offsets[k].dith) / div_value;
-				operations<unsigned char>::set_pixel(pixels, j + offsets[k].x, i + offsets[k].y, (int)new_value, false, gamma);
+				float new_value = (float)pixel + err * offsets[k].dith;
+
+				if (new_value < 0.0f)
+					new_value = 0;
+
+				if (new_value > 255.0f)
+					new_value = 255;
+
+
+				operations<unsigned char>::set_pixel(pixels, j + offsets[k].x, i + offsets[k].y, (unsigned char)new_value, false, gamma);
 			}
 		}
 	}
@@ -107,57 +117,57 @@ void p5_list::base_dithering(vector<vector2d> offsets, float div_value, double b
 void p5_list::floid_dithering(float bit, float gamma)
 {
 	vector<vector2d> offsets;
-	offsets.push_back(vector2d(1, 0, 7));
-	offsets.push_back(vector2d(-1, 1, 3));
-	offsets.push_back(vector2d(0, 1, 5));
-	offsets.push_back(vector2d(1, 1, 1));
-	base_dithering(offsets, 16, bit, gamma);
+	offsets.push_back(vector2d(1, 0, 7.0f / 16.0f));
+	offsets.push_back(vector2d(-1, 1, 3.0f / 16.0f));
+	offsets.push_back(vector2d(0, 1, 5.0f / 16.0f));
+	offsets.push_back(vector2d(1, 1, 1.0f / 16.0f));
+	base_dithering(offsets, bit, gamma);
 }
 
 void p5_list::jjn_dithering(float bit, float gamma)
 {
 	vector<vector2d> offsets;
-	offsets.push_back(vector2d(1, 0, 7));
-	offsets.push_back(vector2d(2, 0, 5));
-	offsets.push_back(vector2d(-2, 1, 3));
-	offsets.push_back(vector2d(-1, 1, 5));
-	offsets.push_back(vector2d(0, 1, 7));
-	offsets.push_back(vector2d(1, 1, 5));
-	offsets.push_back(vector2d(2, 1, 3));
-	offsets.push_back(vector2d(-2, 2, 1));
-	offsets.push_back(vector2d(-1, 2, 3));
-	offsets.push_back(vector2d(0, 2, 5));
-	offsets.push_back(vector2d(1, 2, 3));
-	offsets.push_back(vector2d(2, 2, 1));
-	base_dithering(offsets, 48, bit, gamma);
+	offsets.push_back(vector2d(1, 0, 7.0f / 48.0f));
+	offsets.push_back(vector2d(2, 0, 5.0f / 48.0f));
+	offsets.push_back(vector2d(-2, 1, 3.0f / 48.0f));
+	offsets.push_back(vector2d(-1, 1, 5.0f / 48.0f));
+	offsets.push_back(vector2d(0, 1, 7.0f / 48.0f));
+	offsets.push_back(vector2d(1, 1, 5.0f / 48.0f));
+	offsets.push_back(vector2d(2, 1, 3.0f / 48.0f));
+	offsets.push_back(vector2d(-2, 2, 1.0f / 48.0f));
+	offsets.push_back(vector2d(-1, 2, 3.0f / 48.0f));
+	offsets.push_back(vector2d(0, 2, 5.0f / 48.0f));
+	offsets.push_back(vector2d(1, 2, 3.0f / 48.0f));
+	offsets.push_back(vector2d(2, 2, 1.0f / 48.0f));
+	base_dithering(offsets, bit, gamma);
 }
 
 void p5_list::atkinson_dithering(float bit, float gamma)
 {
 	vector<vector2d> offsets;
-	offsets.push_back(vector2d(1, 0, 1));
-	offsets.push_back(vector2d(2, 0, 1));
-	offsets.push_back(vector2d(-1, 1, 1));
-	offsets.push_back(vector2d(0, 1, 1));
-	offsets.push_back(vector2d(1, 1, 1));
-	offsets.push_back(vector2d(0, 2, 1));
-	base_dithering(offsets, 8, bit, gamma);
+	offsets.push_back(vector2d(1, 0, 1.0f / 8.0f));
+	offsets.push_back(vector2d(2, 0, 1.0f / 8.0f));
+	offsets.push_back(vector2d(-1, 1, 1.0f / 8.0f));
+	offsets.push_back(vector2d(0, 1, 1.0f / 8.0f));
+	offsets.push_back(vector2d(1, 1, 1.0f / 8.0f));
+	offsets.push_back(vector2d(0, 2, 1.0f / 8.0f));
+	base_dithering(offsets, bit, gamma);
 }
 
 void p5_list::sierra_dithering(float bit, float gamma)
 {
 	vector<vector2d> offsets;
-	offsets.push_back(vector2d(1, 0, 5));
-	offsets.push_back(vector2d(2, 0, 3));
-	offsets.push_back(vector2d(-2, 1, 2));
-	offsets.push_back(vector2d(-1, 1, 4));
-	offsets.push_back(vector2d(0, 1, 5));
-	offsets.push_back(vector2d(1, 1, 4));
-	offsets.push_back(vector2d(2, 1, 2));
-	offsets.push_back(vector2d(-1, 2, 2));
-	offsets.push_back(vector2d(0, 2, 3));
-	offsets.push_back(vector2d(1, 2, 2));
-	base_dithering(offsets, 32, bit, gamma);
+	offsets.push_back(vector2d(1, 0, 5.0f / 32.0f));
+	offsets.push_back(vector2d(2, 0, 3.0f / 32.0f));
+	offsets.push_back(vector2d(-2, 1, 2.0f / 32.0f));
+	offsets.push_back(vector2d(-1, 1, 4.0f / 32.0f));
+	offsets.push_back(vector2d(0, 1, 5.0f / 32.0f));
+	offsets.push_back(vector2d(1, 1, 4.0f / 32.0f));
+	offsets.push_back(vector2d(2, 1, 2.0f / 32.0f));
+	offsets.push_back(vector2d(-1, 2, 2.0f / 32.0f));
+	offsets.push_back(vector2d(0, 2, 3.0f / 32.0f));
+	offsets.push_back(vector2d(1, 2, 2.0f / 32.0f));
+	base_dithering(offsets, bit, gamma);
 }
 
 void p5_list::random_dithering(float bit, float gamma)
@@ -262,6 +272,12 @@ void p5_list::halftone_dithering(float bit, float gamma)
 	base_matrix_dithering(matrix, bit, gamma);
 }
 
+void p5_list::no_dithering(float bit, float gamma)
+{
+	vector<vector2d> offsets;
+	base_dithering(offsets, bit, gamma);
+}
+
 void p5_list::inverse_pixel()
 {
 
@@ -295,7 +311,7 @@ istream& p5_list::operator>>(istream& is)
 	const int size = end_pos - pos;
 	is.seekg(pos, SEEK_SET);
 
-	if (size != height * width)
+	if (size != height * width && height > 0 && width > 0)
 		throw exception("invalid file data");
 
 	for (int i = 0; i < height; ++i)

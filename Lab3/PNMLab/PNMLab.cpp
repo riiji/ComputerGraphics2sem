@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 
 		switch (dithering)
 		{
-		case 0:;
+		case 0: p5->no_dithering(bit, gamma); break;
 		case 1: p5->ordered_dithering(bit, gamma); break;
 		case 2: p5->random_dithering(bit, gamma); break;
 		case 3: p5->floid_dithering(bit, gamma); break;

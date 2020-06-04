@@ -66,9 +66,9 @@ istream& p6_list::operator>>(istream& is)
 	const int size = end_pos - pos;
 	is.seekg(pos, SEEK_SET);
 
-	if (size != (height * width*3))
+	if (size != (height * width*3) && height>0 && width>0)
 		throw exception("invalid file data");
-
+		
 	for (int i = 0;i < height;++i)
 	{
 		for (int j = 0;j < width;++j)

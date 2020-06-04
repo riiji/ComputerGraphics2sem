@@ -12,12 +12,6 @@ public:
 	static void vertical_reflect(vector<vector<T>>& obj);
 	static void set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse, float gamma);
 	static T get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, float gamma);
-	/*
-	template <typename color>
-	static void from_color_to_rgb(vector<vector<T>>& obj, T(*color)(T));
-	template <typename color>
-	static void from_rgb_to_color(vector<vector<T>>& obj, T(*color)(T));
-	*/
 };
 
 template <class T>
@@ -136,37 +130,3 @@ T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, f
 	else
 		return powf(obj[y][x] / 255.0, gamma) * 255.0;
 }
-
-/*
-template<class T>
-template<typename color>
-inline void operations<T>::from_color_to_rgb(vector<vector<T>>& obj, T(*color)(T))
-{
-	int height = obj.size();
-	int width = obj.size();
-
-	for (int i = 0; i < height; ++i)
-	{
-		for (int j = 0; j < width; ++j)
-		{
-			obj[i][j] = color(obj[i][j]);
-		}
-	}
-}
-
-template<class T>
-template<typename color>
-inline void operations<T>::from_rgb_to_color(vector<vector<T>>& obj, T(*color)(T))
-{
-	int height = obj.size();
-	int width = obj.size();
-
-	for (int i = 0; i < height; ++i)
-	{
-		for (int j = 0; j < width; ++j)
-		{
-			obj[i][j] = color(obj[i][j]);
-		}
-	}
-}
-*/

@@ -2,7 +2,7 @@
 
 class vector2d {
 public:
-	vector2d(int x, int y, int dith)
+	vector2d(int x, int y, float dith)
 	{
 		this->x = x;
 		this->y = y;
@@ -10,5 +10,5 @@ public:
 	}
 
 	int x, y;
-	int dith;
+	float dith;
 };
