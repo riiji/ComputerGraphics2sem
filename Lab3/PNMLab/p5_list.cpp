@@ -195,15 +195,18 @@ void p5_list::random_dithering(float bit, float gamma)
 		for (int j = 0; j < width; ++j)
 		{
 			auto old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
-			auto new_pixel = old_pixel + (rand() % 255) - 128;
+			
+			auto new_pixel = old_pixel - (rand()%255) + 128;
 
-			if (new_pixel > 255)
-				new_pixel = 255;
+			float ap = ((powf(2.0f, bit)) * (float)new_pixel - 255) / 255.0f;
+			float rap = ceil(ap);
+			float np = rap * (255 / (powf(2.0f, bit) - 1));
 
-			if (new_pixel < 0)
-				new_pixel = 0;
+			if (np > 255)
+				np = 255;
 
-			int np = round(pow(2, bit - 1) * (double)new_pixel / 255.0) * (255.0 / pow(2, bit - 1));
+			if (np < 0)
+				np = 0;
 
 			operations<unsigned char>::set_pixel(pixels, j, i, np, false, gamma);
 		}
@@ -224,16 +227,18 @@ void p5_list::base_matrix_dithering(vector<vector<unsigned char>> matrix, float 
 			for (int j = 0; j < matrix_width; ++j)
 			{
 				auto old_pixel = operations<unsigned char>::get_pixel(pixels, cur_j + j, cur_i + i, false, gamma);
-				auto new_pixel = old_pixel + matrix[i][j] - 128;
+				auto new_pixel = old_pixel - matrix[i][j] + 128;
 
-				if (new_pixel > 255)
-					new_pixel = 255;
+				float ap = ((powf(2.0f, bit)) * (float)new_pixel - 255) / 255.0f;
+				float rap = ceil(ap);
+				float np = rap * (255 / (powf(2.0f, bit) - 1));
 
-				if (new_pixel < 0)
-					new_pixel = 0;
+				if (np > 255)
+					np = 255;
 
-				int np = round(pow(2, bit - 1) * (double)new_pixel / 255.0) * (255.0 / pow(2, bit - 1));
-
+				if (np < 0)
+					np = 0;
+	
 				operations<unsigned char>::set_pixel(pixels, cur_j + j, cur_i + i, np, false, gamma);
 			}
 		}

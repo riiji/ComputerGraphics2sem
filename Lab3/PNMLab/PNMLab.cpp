@@ -64,10 +64,13 @@ int main(int argc, char* argv[])
 			throw exception("invalid filename output");
 
 		pic.operator<<(os);
+		
+		return 0;
 	}
 	catch (exception e)
 	{
 		std::cerr << e.what();
+		return 1;
 	}
 }
 
