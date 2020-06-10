@@ -100,12 +100,6 @@ void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 		{
 			unsigned char old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
 
-			if (j == 20)
-			{
-				cout << -1;
-			}
-
-
 			float ap = ((powf(2.0f, bit)) * (float)old_pixel-255) / 255.0f;
 			float rap = ceil(ap);
 			float np = rap * (255 / (powf(2.0f, bit)-1));
