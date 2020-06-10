@@ -19,13 +19,9 @@ int main(int argc, char* argv[])
 			throw exception("invalid argument count");
 
 		ifstream is(argv[1], ios::binary);
-		ofstream os(argv[2], ios::binary);
 
 		if (!is.is_open())
 			throw exception("invalid filename input");
-
-		if (!os.is_open())
-			throw exception("invalid filename output");
 
 		pic.operator>>(is);
 
@@ -61,6 +57,11 @@ int main(int argc, char* argv[])
 		case 7: p5->halftone_dithering(bit, gamma); break;
 		default: throw exception("invalid dither type value"); break;
 		}
+
+		ofstream os(argv[2], ios::binary);
+
+		if (!os.is_open())
+			throw exception("invalid filename output");
 
 		pic.operator<<(os);
 	}

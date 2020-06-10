@@ -71,9 +71,19 @@ void p5_list::draw_horizontal_gradient(float gamma)
 {
 	int height = pixels.size();
 	int width = pixels.front().size();
-	double s = 255 / (double)width;
+	double s = 256.0 / (double)width;
+
 	for (int i = 0; i < width; ++i)
-		operations<unsigned char>::set_pixel(pixels, i, 0, s * i, false, gamma);
+	{
+		double np = round(s * i);
+
+		if (np < 0) np = 0;
+		if (np > 255) np = 255;
+
+		operations<unsigned char>::set_pixel(pixels, i, 0, np, false, gamma);
+
+	}
+
 	for (int i = 1; i < height; ++i)
 		for (int j = 0; j < width; ++j)
 			pixels[i][j] = pixels[0][j];
@@ -90,9 +100,23 @@ void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 		{
 			unsigned char old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
 
-			float ap = trunc(powf(2.0f, bit) - 1.0f * (float)old_pixel / 255.0f);
-			float np = roundf((powf(2.0f, bit) - 1.0f) * (float)old_pixel / 255.0f) * (255.0f / (powf(2.0f, bit) - 1.0f));
+			if (j == 20)
+			{
+				cout << -1;
+			}
+
+
+			float ap = ((powf(2.0f, bit)) * (float)old_pixel-255) / 255.0f;
+			float rap = ceil(ap);
+			float np = rap * (255 / (powf(2.0f, bit)-1));
 			float err = (float)old_pixel - np;
+
+			if (np > 255)
+				np = 255;
+			
+			if (np < 0)
+				np = 0;
+
 			operations<unsigned char>::set_pixel(pixels, j, i, (unsigned char)np, false, gamma);
 
 
