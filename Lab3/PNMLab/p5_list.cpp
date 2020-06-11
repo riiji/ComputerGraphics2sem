@@ -101,7 +101,7 @@ void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 		{
 			unsigned char old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
 
-			float ap = ((powf(2.0f, bit)) * (float)old_pixel) / 256.0f;
+			float ap = ((powf(2.0f, bit)) * (float)old_pixel - 255) / 256.0f;
 			float rap = ceil(ap);
 			float np = rap * (255 / (powf(2.0f, bit) - 1));
 			float err = (float)old_pixel - np;
@@ -205,7 +205,7 @@ void p5_list::random_dithering(float bit, float gamma)
 			if (new_pixel < 0)
 				new_pixel = 0;
 
-			float ap = ((powf(2.0f, bit)) * (float)new_pixel) / 256.0f;
+			float ap = ((powf(2.0f, bit)) * (float)new_pixel-255) / 256.0f;
 			float rap = ceil(ap);
 			float np = rap * (255 / (powf(2.0f, bit) - 1));
 
@@ -242,10 +242,9 @@ void p5_list::base_matrix_dithering(vector<vector<unsigned char>> matrix, float 
 				if (new_pixel < 0)
 					new_pixel = 0;
 
-				float ap = ((powf(2.0f, bit)) * (float)new_pixel) / 256.0f;
+				float ap = ((powf(2.0f, bit)) * (float)new_pixel-255) / 256.0f;
 				float rap = ceil(ap);
 				float np = rap * (255 / (powf(2.0f, bit) - 1));
-
 
 				if (np > 255)
 					np = 255;
