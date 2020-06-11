@@ -3,6 +3,7 @@
 #include "operations.h"
 #include <tuple>
 #include <algorithm>
+#include <map>
 #include <math.h>
 using namespace std;
 
@@ -100,14 +101,14 @@ void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 		{
 			unsigned char old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
 
-			float ap = ((powf(2.0f, bit)) * (float)old_pixel-255) / 255.0f;
+			float ap = ((powf(2.0f, bit)) * (float)old_pixel) / 256.0f;
 			float rap = ceil(ap);
-			float np = rap * (255 / (powf(2.0f, bit)-1));
+			float np = rap * (255 / (powf(2.0f, bit) - 1));
 			float err = (float)old_pixel - np;
 
 			if (np > 255)
 				np = 255;
-			
+
 			if (np < 0)
 				np = 0;
 
@@ -195,10 +196,16 @@ void p5_list::random_dithering(float bit, float gamma)
 		for (int j = 0; j < width; ++j)
 		{
 			auto old_pixel = operations<unsigned char>::get_pixel(pixels, j, i, false, gamma);
-			
-			auto new_pixel = old_pixel - (rand()%255) + 128;
 
-			float ap = ((powf(2.0f, bit)) * (float)new_pixel - 255) / 255.0f;
+			auto new_pixel = old_pixel + (rand() % 255) - 128;
+
+			if (new_pixel > 255)
+				new_pixel = 255;
+
+			if (new_pixel < 0)
+				new_pixel = 0;
+
+			float ap = ((powf(2.0f, bit)) * (float)new_pixel) / 256.0f;
 			float rap = ceil(ap);
 			float np = rap * (255 / (powf(2.0f, bit) - 1));
 
@@ -227,18 +234,25 @@ void p5_list::base_matrix_dithering(vector<vector<unsigned char>> matrix, float 
 			for (int j = 0; j < matrix_width; ++j)
 			{
 				auto old_pixel = operations<unsigned char>::get_pixel(pixels, cur_j + j, cur_i + i, false, gamma);
-				auto new_pixel = old_pixel - matrix[i][j] + 128;
+				auto new_pixel = old_pixel + matrix[i][j] - 128;
 
-				float ap = ((powf(2.0f, bit)) * (float)new_pixel - 255) / 255.0f;
+				if (new_pixel > 255)
+					new_pixel = 255;
+
+				if (new_pixel < 0)
+					new_pixel = 0;
+
+				float ap = ((powf(2.0f, bit)) * (float)new_pixel) / 256.0f;
 				float rap = ceil(ap);
 				float np = rap * (255 / (powf(2.0f, bit) - 1));
+
 
 				if (np > 255)
 					np = 255;
 
 				if (np < 0)
 					np = 0;
-	
+
 				operations<unsigned char>::set_pixel(pixels, cur_j + j, cur_i + i, np, false, gamma);
 			}
 		}
