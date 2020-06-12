@@ -7,7 +7,7 @@
 #include "extensions.h"
 #include "p5_list.h"
 #include <string>
-
+#include "p5_color_conversion.h"
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		int gradient = stoi(argv[3]);
 		int dithering = stoi(argv[4]);
 		int bit = stoi(argv[5]);
-		float gamma = stoi(argv[6]);
+		float gamma = stof(argv[6]);
 
 		if (bit < 1 || bit>8)
 			throw exception("invalid bit value");
