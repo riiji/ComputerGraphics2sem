@@ -19,7 +19,7 @@ pnm::pnm(string version, int width, int height, int magic, IPixel_list* pixels)
 
 pnm::pnm()
 {
-
+	table_data = new p5_list(0, 0);
 }
 
 void pnm::swap()
