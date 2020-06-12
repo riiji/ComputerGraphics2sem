@@ -60,6 +60,26 @@ int main(int argc, char* argv[])
 		if (from_color_space == "" || to_color_space == "" || i_count == 0 || o_count == 0 || input_file == "" || output_file == "")
 			throw exception("invalid args");
 
+		int input_dot_pos = 0;
+		int output_dot_pos = 0;
+
+		for (int i = 0; i < input_file.size(); ++i)
+			if (input_file[i] == '.')
+				input_dot_pos = i;
+
+		for (int i = 0; i < output_file.size(); ++i)
+			if (output_file[i] == '.')
+				output_dot_pos = i;
+
+		string ext_input_file = "";
+		string ext_output_file = "";
+
+		ext_input_file = input_file.substr(input_dot_pos, input_file.size());
+		ext_output_file = output_file.substr(output_dot_pos, output_file.size());
+
+		input_file = input_file.substr(0, input_dot_pos);
+		output_file = output_file.substr(0, output_dot_pos);
+
 		auto pic_i_1 = pnm();
 		auto pic_i_2 = pnm();
 		auto pic_i_3 = pnm();
@@ -94,7 +114,7 @@ int main(int argc, char* argv[])
 
 		if (i_count == 1)
 		{
-			is1.open(input_file + ".ppm", ios::binary);
+			is1.open(input_file + ext_input_file, ios::binary);
 
 			if (!is1.is_open())
 				throw exception("file not existed to open");
@@ -109,9 +129,9 @@ int main(int argc, char* argv[])
 
 		if (i_count == 3)
 		{
-			is1.open(input_file + "_1.pgm", ios::binary);
-			is2.open(input_file + "_2.pgm", ios::binary);
-			is3.open(input_file + "_3.pgm", ios::binary);
+			is1.open(input_file + "_1" + ext_input_file, ios::binary);
+			is2.open(input_file + "_2" + ext_input_file, ios::binary);
+			is3.open(input_file + "_3" + ext_input_file, ios::binary);
 
 			if (!is1.is_open() || !is2.is_open() || !is3.is_open())
 				throw exception("file not existed to open");
@@ -141,7 +161,7 @@ int main(int argc, char* argv[])
 
 		if (o_count == 1)
 		{
-			os1.open(output_file + ".ppm", ios::binary);
+			os1.open(output_file + ext_output_file, ios::binary);
 
 			if (!os1.is_open())
 				throw exception("can't open output file");
@@ -151,9 +171,9 @@ int main(int argc, char* argv[])
 
 		if (o_count == 3)
 		{
-			os1.open(output_file + "_1.pgm", ios::binary);
-			os2.open(output_file + "_2.pgm", ios::binary);
-			os3.open(output_file + "_3.pgm", ios::binary);
+			os1.open(output_file + "_1" + ext_output_file, ios::binary);
+			os2.open(output_file + "_2" + ext_output_file, ios::binary);
+			os3.open(output_file + "_3" + ext_output_file, ios::binary);
 
 			if (!os1.is_open() || !os2.is_open() || !os3.is_open())
 				throw exception("can't open output file");

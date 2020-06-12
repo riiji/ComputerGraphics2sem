@@ -181,7 +181,7 @@ int main(int argc, char* argv[])
 			}
 			else
 				pic.operator<<(os);
-		}
+		} 
 	}
 	catch (exception e)
 	{
