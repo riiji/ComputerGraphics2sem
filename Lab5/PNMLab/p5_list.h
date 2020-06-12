@@ -31,7 +31,7 @@ public:
 	void ordered_dithering(float bit, float gamma);
 	void halftone_dithering(float bit, float gamma);
 	void no_dithering(float bit, float gamma);
-	void offset(float value, bool only_first, float ignore_percent);
+	void offset(float value, float multiplier, float ignore_percent, bool auto_contract);
 
 	void inverse_pixel() override;
 

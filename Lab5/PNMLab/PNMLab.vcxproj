@@ -153,7 +153,6 @@
     <ClCompile Include="PNMLab.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="helper.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="IPixel_list.h" />
     <ClInclude Include="p5_list.h" />

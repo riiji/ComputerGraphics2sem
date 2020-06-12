@@ -100,13 +100,16 @@ void p6_list::convert(string from, string to)
 	}
 }
 
-void p6_list::offset(float off, float multiplier, bool YCbCr, float ignore_percent)
+void p6_list::offset(float off, float multiplier, bool YCbCr, float ignore_percent, bool auto_contrast)
 {
 	int highest_pixel = 0;
+	int lowest_pixel = 255;
 	long long pixel_sum = 0;
 	long long ignore_value = 0;
 	int pixel_count = height * width;
 	int pixels_for_remove = pixel_count * ignore_percent;
+	int highest_pixel_after_remove = 0;
+	int lowest_pixel_after_remove = 255;
 
 	vector<int> distribution(256);
 	vector<int> on_remove(256);
@@ -119,15 +122,18 @@ void p6_list::offset(float off, float multiplier, bool YCbCr, float ignore_perce
 			{
 				pixel_sum += get<0>(pixels[i][j]);
 				highest_pixel = max(highest_pixel, (int)get<0>(pixels[i][j]));
-				++distribution[highest_pixel];
+				lowest_pixel = min(lowest_pixel, (int)get<0>(pixels[i][j]));
+				++distribution[get<0>(pixels[i][j])];
 			}
 
 			else
 			{
 				int ma = max(get<0>(pixels[i][j]), max(get<1>(pixels[i][j]), get<2>(pixels[i][j])));
+				int mi = min(get<0>(pixels[i][j]), min(get<1>(pixels[i][j]), get<2>(pixels[i][j])));
 				pixel_sum += ma;
 				highest_pixel = max(highest_pixel, ma);
-				++distribution[highest_pixel];
+				lowest_pixel = min(lowest_pixel, mi);
+				++distribution[ma];
 			}
 		}
 	}
@@ -137,26 +143,31 @@ void p6_list::offset(float off, float multiplier, bool YCbCr, float ignore_perce
 
 	for (int i = 0; i < 255; ++i)
 	{
+		if (distribution[i] > lowest_pixels_for_remove)
+		{
+			on_remove[i] += lowest_pixels_for_remove;
+			lowest_pixel_after_remove = i;
+			break;
+		}
+		else
+		{
+			lowest_pixels_for_remove -= distribution[i];
+			on_remove[i] += distribution[i];
+		}
+	}
+
+	for (int i = 255; i >= 0; --i)
+	{
 		if (distribution[i] > highest_pixels_for_remove)
 		{
 			on_remove[i] += highest_pixels_for_remove;
+			highest_pixel_after_remove = i;
 			break;
 		}
 		else
 		{
 			highest_pixels_for_remove -= distribution[i];
-			on_remove[i] += highest_pixels_for_remove;
-		}
-
-		if (distribution[255 - i - 1] > lowest_pixels_for_remove)
-		{
-			on_remove[255 - i - 1] += lowest_pixels_for_remove;
-			break;
-		}
-		else
-		{
-			lowest_pixels_for_remove -= distribution[255 - i - 1];
-			on_remove[255 - i - 1] += lowest_pixels_for_remove;
+			on_remove[i] += distribution[i];
 		}
 	}
 
@@ -178,7 +189,18 @@ void p6_list::offset(float off, float multiplier, bool YCbCr, float ignore_perce
 				int cb = get<1>(pixels[i][j]);
 				int cr = get<2>(pixels[i][j]);
 
-				y = (y - off) * multiplier;
+				if (!auto_contrast)
+					y = (y - off) * multiplier;
+				else
+					y = (y - lowest_pixel_after_remove) * 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
+
+				if (y > 255) y = 255;
+				if (cb > 255) cb = 255;
+				if (cr > 255) cr = 255;
+
+				if (y < 0) y = 0;
+				if (cb < 0) cb = 0;
+				if (cr < 0) cr = 0;
 
 				pixels[i][j] = p6_data(y, cb, cr);
 			}
@@ -196,9 +218,26 @@ void p6_list::offset(float off, float multiplier, bool YCbCr, float ignore_perce
 				int g = get<1>(pixels[i][j]);
 				int b = get<2>(pixels[i][j]);
 
-				r = (r - off) * multiplier;
-				g = (g - off) * multiplier;
-				b = (b - off) * multiplier;
+				if (!auto_contrast)
+				{
+					r = (r - off) * multiplier;
+					g = (g - off) * multiplier;
+					b = (b - off) * multiplier;
+				}
+				else
+				{
+					r = (r - lowest_pixel_after_remove) * 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
+					g = (g - lowest_pixel_after_remove) * 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
+					b = (b - lowest_pixel_after_remove) * 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
+				}
+
+				if (r > 255) r = 255;
+				if (g > 255) g = 255;
+				if (b > 255) b = 255;
+
+				if (r < 0) r = 0;
+				if (g < 0) g = 0;
+				if (b < 0) b = 0;
 
 				pixels[i][j] = p6_data(r, g, b);
 			}

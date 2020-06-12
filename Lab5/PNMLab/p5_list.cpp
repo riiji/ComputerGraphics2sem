@@ -314,8 +314,87 @@ void p5_list::no_dithering(float bit, float gamma)
 	base_dithering(offsets, bit, gamma);
 }
 
-void p5_list::offset(float value, bool only_first, float ignore_percent)
+void p5_list::offset(float value, float multiplier, float ignore_percent, bool auto_contrast)
 {
+	int highest_pixel = 0;
+	int lowest_pixel = 255;
+	long long pixel_sum = 0;
+	long long ignore_value = 0;
+	int pixel_count = height * width;
+	int pixels_for_remove = pixel_count * ignore_percent;
+	int highest_pixel_after_remove = 0;
+	int lowest_pixel_after_remove = 255;
+
+	vector<int> distribution(256);
+	vector<int> on_remove(256);
+
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			pixel_sum += pixels[i][j];
+			highest_pixel = max(highest_pixel, (int)pixels[i][j]);
+			lowest_pixel = min(lowest_pixel, (int)pixels[i][j]);
+			++distribution[pixels[i][j]];
+		}
+	}
+
+	int highest_pixels_for_remove = pixels_for_remove;
+	int lowest_pixels_for_remove = pixels_for_remove;
+
+	for (int i = 0; i < 255; ++i)
+	{
+		if (distribution[i] > lowest_pixels_for_remove)
+		{
+			on_remove[i] += lowest_pixels_for_remove;
+			lowest_pixel_after_remove = i;
+			break;
+		}
+		else
+		{
+			lowest_pixels_for_remove -= distribution[i];
+			on_remove[i] += distribution[i];
+		}
+	}
+
+	for (int i = 255; i >= 0; --i)
+	{
+		if (distribution[i] > highest_pixels_for_remove)
+		{
+			on_remove[i] += highest_pixels_for_remove;
+			highest_pixel_after_remove = i;
+			break;
+		}
+		else
+		{
+			highest_pixels_for_remove -= distribution[i];
+			on_remove[i] += distribution[i];
+		}
+	}
+
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			int brightness = pixels[i][j];
+
+			if (on_remove[brightness] > 0)
+			{
+				--on_remove[brightness];
+				continue;
+			}
+
+			if (!auto_contrast)
+				pixels[i][j] = (pixels[i][j] - value) * multiplier;
+			else
+				pixels[i][j] = (pixels[i][j] - lowest_pixel_after_remove) * 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
+
+			if (pixels[i][j] > 255)
+				pixels[i][j] = 255;
+			else if (pixels[i][j] == 0)
+				pixels[i][j] = 0;
+		}
+	}
 }
 
 void p5_list::inverse_pixel()

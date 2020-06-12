@@ -21,7 +21,7 @@ public:
 	void vertical_reflect() override;
 	void inverse_pixel() override;
 	void convert(string from, string to);
-	void offset(float off, float multiplier, bool only_first, float ignore_percent);
+	void offset(float off, float multiplier, bool only_first, float ignore_percent, bool auto_contrast);
 
 	static vector<vector<p6_data>> combine(vector<vector<vector<p5_data>>>& xyz);
 	static vector<vector<p6_data>> combine(vector<vector<p5_data>>& x, vector<vector<p5_data>>& y, vector<vector<p5_data>>& z);

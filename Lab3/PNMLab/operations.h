@@ -71,15 +71,15 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 
 	if (gamma == 0)
 	{
-		float linear = pixel * 255.0f;
 		float srgb;
-		if (linear <= 0.0031308f) {
-			srgb = linear * 12.92f;
+		pixel /= 255.0f;
+		if (pixel <= 0.0031308f) {
+			srgb = pixel * 12.92f;
 		}
 		else {
-			srgb = 1.055f * std::powf(linear, 1.0f / 2.4f) - 0.055f;
+			srgb = 1.055f * std::powf(pixel, 1.0f / 2.4f) - 0.055f;
 		}
-		obj[y][x] = srgb * 255.0f;
+		obj[y][x] = srgb * 255.f;
 	}
 
 	T new_pixel = pow((double)pixel / 255, (double)gamma) * 255;
