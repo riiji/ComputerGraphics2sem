@@ -17,9 +17,9 @@ pnm::pnm(string version, int width, int height, int magic, IPixel_list* pixels)
 	this->table_data = pixels;
 }
 
-pnm::pnm()
+pnm::pnm() : table_data(nullptr)
 {
-	table_data = new p5_list(0, 0);
+
 }
 
 void pnm::swap()
@@ -39,11 +39,11 @@ istream& pnm::operator>>(istream& is)
 {
 	is >> version >> width >> height >> magic;
 
-	if(version=="P5")
+	if (version == "P5")
 	{
 		table_data = new p5_list(width, height);
 	}
-	else if (version=="P6")
+	else if (version == "P6")
 	{
 		table_data = new p6_list(width, height);
 	}
@@ -54,7 +54,7 @@ istream& pnm::operator>>(istream& is)
 
 	if (magic != 255)
 		throw exception("invalid magic value");
-	
+
 	table_data->operator>>(is);
 
 	return is;
