@@ -164,7 +164,7 @@ p6_data p6_list::rgb_to_hsl(p6_data value)
 
 	s = (delta) / (1 - abs(1 - 2 * l));
 
-	h = roundf(h * 255.0f / 360.0);
+	h = roundf(h * 255.0f / 360.0f);
 	s = roundf(s * 255.0f);
 	l = roundf(l * 255.0f);
 
@@ -447,9 +447,9 @@ p6_data p6_list::rgb_to_ycocg(p6_data value)
 	float co = r / 2 - b / 2 + 0.5;
 	float cg = -r / 4 + g / 2 - b / 4 + 0.5;
 
-	y *= 255;
-	co *= 255;
-	cg *= 255;
+	y = roundf(y * 255.0f);
+	co = roundf(co * 255.0f);
+	cg = roundf(cg * 255.0f);
 
 	if (y > 255)
 		y = 255;
@@ -488,9 +488,9 @@ p6_data p6_list::ycocg_to_rgb(p6_data value)
 	float g = y + cg;
 	float b = y - co - cg;
 
-	r *= 255;
-	g *= 255;
-	b *= 255;
+	r = roundf(r * 255.0f);
+	g = roundf(g * 255.0f);
+	b = roundf(b * 255.0f);
 
 	if (r > 255)
 		r = 255;
