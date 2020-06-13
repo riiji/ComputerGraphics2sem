@@ -221,6 +221,13 @@ vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, in
 		}
 	}
 
+	if (highest_pixel_after_remove == lowest_pixel_after_remove)
+	{
+		calculated_offset = 0;
+		calculated_multiplier = 1;
+		return on_remove;
+	}
+
 	calculated_offset = lowest_pixel_after_remove;
 	calculated_multiplier = 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
 

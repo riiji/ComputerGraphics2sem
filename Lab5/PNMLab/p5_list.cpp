@@ -391,6 +391,13 @@ vector<int> p5_list::calculate_distribution(float ignore_percent, int& calculate
 		}
 	}
 
+	if (highest_pixel_after_remove == lowest_pixel_after_remove)
+	{
+		calculated_offset = 0;
+		calculated_multiplier = 1;
+		return on_remove;
+	}
+
 	calculated_offset = lowest_pixel_after_remove;
 	calculated_multiplier = 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
 
