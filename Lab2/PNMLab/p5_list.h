@@ -18,8 +18,7 @@ public:
 	void turn_right() override;
 	void horizontal_reflect() override;
 	void vertical_reflect() override;
-	void ez_line(double x1, double y1, double x2, double y2);
-	void ez_line_width(double x1, double y1, double x2, double y2, double width, float gamma);
+	void ez_line(float x1, float y1, float x2, float y2, float brightness,float gamma);
 	void draw_horizontal_gradient(float gamma);
 	void base_dithering(vector<vector2d> offsets, double bit, float gamma);
 	void floid_dithering(float bit, float gamma);

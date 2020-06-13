@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <vector>
+#include "p6_list.h"
 using namespace std;
 
 template <class T>
@@ -11,6 +12,7 @@ public:
 	static void horizontal_reflect(vector<vector<T>>& obj);
 	static void vertical_reflect(vector<vector<T>>& obj);
 	static void set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse, float gamma);
+	static void set_p6_pixel(vector<vector<p6_data>>& obj, int x, int y, p6_data pixel);
 	static T get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, float gamma);
 };
 
@@ -71,15 +73,15 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 
 	if (gamma == 0)
 	{
-		auto linear = obj[y][x] / 255.0f;
-		if (linear <= 0.04045f) {
-			linear = linear / 12.92f;
+		float linear = pixel * 255.0f;
+		float srgb;
+		if (linear <= 0.0031308f) {
+			srgb = linear * 12.92f;
 		}
 		else {
-			linear = std::powf((linear + 0.055f) / 1.055f, 2.4f);
+			srgb = 1.055f * std::powf(linear, 1.0f / 2.4f) - 0.055f;
 		}
-		obj[y][x] = linear * 255.0f;
-		return;
+		obj[y][x] = srgb * 255.0f;
 	}
 
 	T new_pixel = pow((double)pixel / 255, (double)gamma) * 255;
@@ -100,6 +102,18 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 	}
 }
 
+template<class T>
+inline void operations<T>::set_p6_pixel(vector<vector<p6_data>>& obj, int x, int y, p6_data pixel)
+{
+	int height = obj.size();
+	int width = obj.front().size();
+
+	if (x < 0 || y < 0 || y>=height || x>=width)
+		return;
+
+	obj[y][x] = pixel;
+}
+
 template <class T>
 T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, float gamma)
 {
@@ -114,17 +128,14 @@ T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, f
 
 	if (gamma == 0)
 	{
-		float srgb;
-		float pixel = obj[y][x];
-		pixel /= 255.0f;
-		if (pixel <= 0.0031308f) {
-			srgb = pixel * 12.92f;
+		auto linear = obj[y][x] / 255.0f;
+		if (linear <= 0.04045f) {
+			linear = linear / 12.92f;
 		}
 		else {
-			srgb = 1.055f * std::powf(pixel, 1.0f / 2.4f) - 0.055f;
+			linear = std::powf((linear + 0.055f) / 1.055f, 2.4f);
 		}
-
-		return srgb*255.0f;
+		return linear * 255.0f;
 	}
 
 	if (reverse)

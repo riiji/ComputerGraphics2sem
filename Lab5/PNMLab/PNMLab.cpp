@@ -12,6 +12,8 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+
+	int fake = 0; float fake2 = 0;
 	try {
 		if (argc != 4 && argc != 6)
 			throw exception("invalid argument count");
@@ -55,12 +57,15 @@ int main(int argc, char* argv[])
 			if (pic.version == "P5")
 			{
 				auto p5 = (p5_list*)pic.table_data;
-				p5->offset(offset, multiplier, 0, false);
+
+				auto pixels_for_remove = p5->calculate_distribution(0, fake, fake2);
+				p5->offset(offset, multiplier);
 			}
 			else if (pic.version == "P6")
-			{
+			{	
 				auto p6 = (p6_list*)pic.table_data;
-				p6->offset(offset, multiplier, false, 0, false);
+				auto pixels_for_remove = p6->calculate_distribution(false, 0, fake, fake2);
+				p6->offset(offset, multiplier, false);
 			}
 		}
 
@@ -69,7 +74,8 @@ int main(int argc, char* argv[])
 			if (pic.version == "P5")
 			{
 				auto p5 = (p5_list*)pic.table_data;
-				p5->offset(offset, multiplier, 0, false);
+				auto pixels_for_remove = p5->calculate_distribution(0, fake, fake2);
+				p5->offset(offset, multiplier);
 			}
 			else if (pic.version == "P6")
 			{
@@ -77,7 +83,8 @@ int main(int argc, char* argv[])
 
 				p6->convert("RGB", "YCbCr.601");
 
-				p6->offset(offset, multiplier, true, 0, false);
+				auto pixels_for_remove = p6->calculate_distribution(true, 0, fake, fake2);
+				p6->offset(offset, multiplier, true);
 
 				p6->convert("YCbCr.601", "RGB");
 			}
@@ -88,12 +95,14 @@ int main(int argc, char* argv[])
 			if (pic.version == "P5")
 			{
 				auto p5 = (p5_list*)pic.table_data;
-				p5->offset(0, 0, 0, true);
+				auto pixels_for_remove = p5->calculate_distribution(0, offset, multiplier);
+				p5->offset(offset, multiplier);
 			}
 			else if (pic.version == "P6")
 			{
 				auto p6 = (p6_list*)pic.table_data;
-				p6->offset(0, 0, false, 0, true);
+				auto pixels_for_remove = p6->calculate_distribution(false, 0, offset, multiplier);
+				p6->offset(offset, multiplier, false);
 			}
 		}
 
@@ -102,13 +111,17 @@ int main(int argc, char* argv[])
 			if (pic.version == "P5")
 			{
 				auto p5 = (p5_list*)pic.table_data;
-				p5->offset(0, 0, 0, true);
+				auto pixels_for_remove = p5->calculate_distribution(0, offset, multiplier);
+				p5->offset(offset, multiplier);
 			}
 			else if (pic.version == "P6")
 			{
 				auto p6 = (p6_list*)pic.table_data;
 				p6->convert("RGB", "YCbCr.601");
-				p6->offset(0, 0, true, 0, true);
+
+				auto pixels_for_remove = p6->calculate_distribution(true, 0, offset, multiplier);
+				p6->offset(offset, multiplier, true);	
+
 				p6->convert("YCbCr.601", "RGB");
 			}
 		}
@@ -118,12 +131,14 @@ int main(int argc, char* argv[])
 			if (pic.version == "P5")
 			{
 				auto p5 = (p5_list*)pic.table_data;
-				p5->offset(0, 0, 0.0039f, true);
+				auto pixels_for_remove = p5->calculate_distribution(0.0039f, offset, multiplier);
+				p5->offset(offset, multiplier);
 			}
 			else if (pic.version == "P6")
 			{
 				auto p6 = (p6_list*)pic.table_data;
-				p6->offset(0, 0, false, 0.0039f, true);
+				auto pixels_for_remove = p6->calculate_distribution(false, 0.0039f, offset, multiplier);
+				p6->offset(offset, multiplier, false);
 			}
 		}
 
@@ -132,13 +147,17 @@ int main(int argc, char* argv[])
 			if (pic.version == "P5")
 			{
 				auto p5 = (p5_list*)pic.table_data;
-				p5->offset(0, 0, 0.0039f, true);
+				auto pixels_for_remove = p5->calculate_distribution(0.0039f, offset, multiplier);
+				p5->offset(offset, multiplier);
 			}
 			else if (pic.version == "P6")
 			{
 				auto p6 = (p6_list*)pic.table_data;
 				p6->convert("RGB", "YCbCr.601");
-				p6->offset(0, 0, true, 0.0039f, true);
+				
+				auto pixels_for_remove = p6->calculate_distribution(true, 0.0039f, offset, multiplier);
+				p6->offset(offset, multiplier, true);
+
 				p6->convert("YCbCr.601", "RGB");
 			}
 		}
@@ -166,7 +185,7 @@ int main(int argc, char* argv[])
 				pic.operator<<(os);
 			}
 		}
-		else if(pic.version=="P6")
+		else if (pic.version == "P6")
 		{
 			if (is_p5_ouput)
 			{
@@ -174,14 +193,16 @@ int main(int argc, char* argv[])
 
 				auto p6 = (p6_list*)pic.table_data;
 				auto p5 = p6_list::split(p6->pixels)[0];
-			
+
 				pic.table_data = new p5_list(p5);
 
 				pic.operator<<(os);
 			}
 			else
 				pic.operator<<(os);
-		} 
+		}
+
+		cout << offset << " " << multiplier;
 	}
 	catch (exception e)
 	{

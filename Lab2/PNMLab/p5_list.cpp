@@ -30,7 +30,7 @@ p5_list::~p5_list()
 	pixels.clear();
 }
 
-void p5_list::ez_line(double x1, double y1, double x2, double y2)
+void p5_list::ez_line(float x1, float y1, float x2, float y2, float brightness, float gamma)
 {
 	bool is_reverse = abs(y2 - y1) > abs(x2 - x1);
 
@@ -46,8 +46,8 @@ void p5_list::ez_line(double x1, double y1, double x2, double y2)
 		swap(y1, y2);
 	}
 
-	operations<unsigned char>::set_pixel(pixels, x1, y1, 0, is_reverse, 2.2);
-	operations<unsigned char>::set_pixel(pixels, x2, y2, 0, is_reverse, 2.2);
+	operations<unsigned char>::set_pixel(pixels, x1, y1, brightness, is_reverse, gamma);
+	operations<unsigned char>::set_pixel(pixels, x2, y2, brightness, is_reverse, gamma);
 
 	float dx = x2 - x1;
 	float dy = y2 - y1;
@@ -57,15 +57,26 @@ void p5_list::ez_line(double x1, double y1, double x2, double y2)
 
 	for (auto x = x1 + 1; x <= x2 - 1; x++)
 	{
-		operations<unsigned char>::set_pixel(pixels, x, (int)y, 255 * (y - (int)y), is_reverse, 2.2);
-		operations<unsigned char>::set_pixel(pixels, x, (int)y + 1, 255 * (1 - (y - (int)y)), is_reverse, 2.2);
+		float pix1 = (y - (int)y) * 250.0f;
+		float pix2 = (1 - (y - (int)y)) * 250.0f;
+
+		pix1 += brightness;
+		pix2 += brightness;
+
+		if (pix1 > 255)
+			pix1 = 255;
+		else if (pix1 < 0)
+			pix1 = 0;
+
+		if (pix2 > 255)
+			pix2 = 255;
+		else if (pix2 < 0)
+			pix2 = 0;
+
+		operations<unsigned char>::set_pixel(pixels, x, (int)y, pix1, is_reverse, gamma);
+		operations<unsigned char>::set_pixel(pixels, x, (int)y + 1, pix2, is_reverse, gamma);
 		y += gradient;
 	}
-}
-
-void p5_list::ez_line_width(double x1, double y1, double x2, double y2, double width, float gamma)
-{
-
 }
 
 void p5_list::draw_horizontal_gradient(float gamma)
