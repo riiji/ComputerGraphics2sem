@@ -279,15 +279,13 @@ void p5_list::ordered_dithering(float bit, float gamma)
 
 void p5_list::halftone_dithering(float bit, float gamma)
 {
-
 	vector<vector<unsigned char>> matrix =
 	{
-		{11,16,3,7},
-		{5,6,10,12},
-		{15,2,14,4},
-		{1,9,8,13},
+		{7,13,11,4},
+		{12,16,14,8},
+		{10,15,6,2},
+		{5,9,3,1},
 	};
-
 
 	for (int i = 0; i < matrix.size(); ++i)
 		for (int j = 0; j < matrix.front().size(); ++j)
