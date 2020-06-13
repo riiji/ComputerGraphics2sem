@@ -46,8 +46,8 @@ void p5_list::ez_line(float x1, float y1, float x2, float y2, float brightness, 
 		swap(y1, y2);
 	}
 
-	operations<unsigned char>::set_pixel(pixels, x1, y1, brightness, is_reverse, gamma);
-	operations<unsigned char>::set_pixel(pixels, x2, y2, brightness, is_reverse, gamma);
+	operations<unsigned char>::set_pixel(pixels, x1, y1, 0, is_reverse, gamma);
+	operations<unsigned char>::set_pixel(pixels, x2, y2, 0, is_reverse, gamma);
 
 	float dx = x2 - x1;
 	float dy = y2 - y1;
@@ -57,11 +57,8 @@ void p5_list::ez_line(float x1, float y1, float x2, float y2, float brightness, 
 
 	for (auto x = x1 + 1; x <= x2 - 1; x++)
 	{
-		float pix1 = (y - (int)y) * 250.0f;
-		float pix2 = (1 - (y - (int)y)) * 250.0f;
-
-		pix1 += brightness;
-		pix2 += brightness;
+		float pix1 = (y - (int)y) * 255.0f;
+		float pix2 = (1 - (y - (int)y)) * 255.0f;
 
 		if (pix1 > 255)
 			pix1 = 255;
