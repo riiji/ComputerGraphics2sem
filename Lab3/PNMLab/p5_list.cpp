@@ -106,12 +106,6 @@ void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 			float np = rap * (255 / (powf(2.0f, bit) - 1));
 			float err = (float)old_pixel - np;
 
-			if (np > 255)
-				np = 255;
-
-			if (np < 0)
-				np = 0;
-
 			operations<unsigned char>::set_pixel(pixels, j, i, (unsigned char)np, false, gamma);
 
 
@@ -119,13 +113,6 @@ void p5_list::base_dithering(vector<vector2d> offsets, double bit, float gamma)
 			{
 				auto pixel = operations<unsigned char>::get_pixel(pixels, j + offsets[k].x, i + offsets[k].y, false, gamma);
 				float new_value = (float)pixel + err * offsets[k].dith;
-
-				if (new_value < 0.0f)
-					new_value = 0;
-
-				if (new_value > 255.0f)
-					new_value = 255;
-
 
 				operations<unsigned char>::set_pixel(pixels, j + offsets[k].x, i + offsets[k].y, (unsigned char)new_value, false, gamma);
 			}

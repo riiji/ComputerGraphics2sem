@@ -84,6 +84,11 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 
 	T new_pixel = pow((double)pixel / 255, (double)gamma) * 255;
 
+	if (new_pixel > 255)
+		new_pixel = 255;
+	else if (new_pixel < 0)
+		new_pixel = 0;
+
 	if (reverse)
 	{
 		if (y >= width || x >= height)
