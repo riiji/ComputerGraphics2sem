@@ -52,114 +52,66 @@ int main(int argc, char* argv[])
 
 		pic.operator>>(is);
 
+		bool is_p5_ouput = false;
+
+		if (output_filename[output_filename.size() - 2] == 'g')
+			is_p5_ouput = true;
+
+		if (pic.version == "P5")
+		{
+			pic.version = "P6";
+			auto p5 = ((p5_list*)pic.table_data)->pixels;
+			pic.table_data = new p6_list(p6_list::combine(p5, p5, p5));
+		}
+
+		auto p6 = (p6_list*)pic.table_data;
+
 		if (convertion == 0)
 		{
-			if (pic.version == "P5")
-			{
-				auto p5 = (p5_list*)pic.table_data;
-
-				auto pixels_for_remove = p5->calculate_distribution(0, fake, fake2);
-				p5->offset(offset, multiplier);
-			}
-			else if (pic.version == "P6")
-			{	
-				auto p6 = (p6_list*)pic.table_data;
-				auto pixels_for_remove = p6->calculate_distribution(false, 0, fake, fake2);
-				p6->offset(offset, multiplier, false);
-			}
+			auto pixels_for_remove = p6->calculate_distribution(false, 0, fake, fake2);
+			p6->offset(offset, multiplier, false);
 		}
 
 		if (convertion == 1)
 		{
-			if (pic.version == "P5")
-			{
-				auto p5 = (p5_list*)pic.table_data;
-				auto pixels_for_remove = p5->calculate_distribution(0, fake, fake2);
-				p5->offset(offset, multiplier);
-			}
-			else if (pic.version == "P6")
-			{
-				auto p6 = (p6_list*)pic.table_data;
+			p6->convert("RGB", "YCbCr.601");
 
-				p6->convert("RGB", "YCbCr.601");
+			auto pixels_for_remove = p6->calculate_distribution(true, 0, fake, fake2);
+			p6->offset(offset, multiplier, true);
 
-				auto pixels_for_remove = p6->calculate_distribution(true, 0, fake, fake2);
-				p6->offset(offset, multiplier, true);
-
-				p6->convert("YCbCr.601", "RGB");
-			}
+			p6->convert("YCbCr.601", "RGB");
 		}
 
 		if (convertion == 2)
 		{
-			if (pic.version == "P5")
-			{
-				auto p5 = (p5_list*)pic.table_data;
-				auto pixels_for_remove = p5->calculate_distribution(0, offset, multiplier);
-				p5->offset(offset, multiplier);
-			}
-			else if (pic.version == "P6")
-			{
-				auto p6 = (p6_list*)pic.table_data;
-				auto pixels_for_remove = p6->calculate_distribution(false, 0, offset, multiplier);
-				p6->offset(offset, multiplier, false);
-			}
+			auto pixels_for_remove = p6->calculate_distribution(false, 0, offset, multiplier);
+			p6->offset(offset, multiplier, false);
 		}
 
 		if (convertion == 3)
 		{
-			if (pic.version == "P5")
-			{
-				auto p5 = (p5_list*)pic.table_data;
-				auto pixels_for_remove = p5->calculate_distribution(0, offset, multiplier);
-				p5->offset(offset, multiplier);
-			}
-			else if (pic.version == "P6")
-			{
-				auto p6 = (p6_list*)pic.table_data;
-				p6->convert("RGB", "YCbCr.601");
+			p6->convert("RGB", "YCbCr.601");
 
-				auto pixels_for_remove = p6->calculate_distribution(true, 0, offset, multiplier);
-				p6->offset(offset, multiplier, true);	
+			auto pixels_for_remove = p6->calculate_distribution(true, 0, offset, multiplier);
+			p6->offset(offset, multiplier, true);
 
-				p6->convert("YCbCr.601", "RGB");
-			}
+			p6->convert("YCbCr.601", "RGB");
 		}
 
 		if (convertion == 4)
 		{
-			if (pic.version == "P5")
-			{
-				auto p5 = (p5_list*)pic.table_data;
-				auto pixels_for_remove = p5->calculate_distribution(0.0039f, offset, multiplier);
-				p5->offset(offset, multiplier);
-			}
-			else if (pic.version == "P6")
-			{
-				auto p6 = (p6_list*)pic.table_data;
-				auto pixels_for_remove = p6->calculate_distribution(false, 0.0039f, offset, multiplier);
-				p6->offset(offset, multiplier, false);
-			}
+			auto pixels_for_remove = p6->calculate_distribution(false, 0.0039f, offset, multiplier);
+			p6->offset(offset, multiplier, false);
 		}
 
 		if (convertion == 5)
 		{
-			if (pic.version == "P5")
-			{
-				auto p5 = (p5_list*)pic.table_data;
-				auto pixels_for_remove = p5->calculate_distribution(0.0039f, offset, multiplier);
-				p5->offset(offset, multiplier);
-			}
-			else if (pic.version == "P6")
-			{
-				auto p6 = (p6_list*)pic.table_data;
-				p6->convert("RGB", "YCbCr.601");
-				
-				auto pixels_for_remove = p6->calculate_distribution(true, 0.0039f, offset, multiplier);
-				p6->offset(offset, multiplier, true);
+			p6->convert("RGB", "YCbCr.601");
 
-				p6->convert("YCbCr.601", "RGB");
-			}
+			auto pixels_for_remove = p6->calculate_distribution(true, 0.0039f, offset, multiplier);
+			p6->offset(offset, multiplier, true);
+
+			p6->convert("YCbCr.601", "RGB");
 		}
 
 
@@ -168,38 +120,19 @@ int main(int argc, char* argv[])
 		if (!os.is_open())
 			throw exception("can't open output file");
 
-		bool is_p5_ouput = false;
-
-		if (output_filename[output_filename.size() - 2] == 'g')
-			is_p5_ouput = true;
-
-		if (pic.version == "P5")
+		if (is_p5_ouput)
 		{
-			if (is_p5_ouput)
-				pic.operator<<(os);
-			else
-			{
-				pic.version = "P6";
-				auto p5 = ((p5_list*)pic.table_data)->pixels;
-				pic.table_data = new p6_list(p6_list::combine(p5, p5, p5));
-				pic.operator<<(os);
-			}
+			pic.version = "P5";
+
+			auto p5 = p6_list::split(p6->pixels)[0];
+
+			pic.table_data = new p5_list(p5);
+
+			pic.operator<<(os);
 		}
-		else if (pic.version == "P6")
+		else
 		{
-			if (is_p5_ouput)
-			{
-				pic.version = "P5";
-
-				auto p6 = (p6_list*)pic.table_data;
-				auto p5 = p6_list::split(p6->pixels)[0];
-
-				pic.table_data = new p5_list(p5);
-
-				pic.operator<<(os);
-			}
-			else
-				pic.operator<<(os);
+			pic.operator<<(os);
 		}
 
 		cout << offset << " " << multiplier;
