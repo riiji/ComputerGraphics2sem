@@ -71,13 +71,14 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 
 	if (gamma == 0)
 	{
-		auto linear = obj[y][x] / 255.0f;
+		auto linear = pixel / 255.0f;
 		if (linear <= 0.04045f) {
 			linear = linear / 12.92f;
 		}
 		else {
 			linear = std::powf((linear + 0.055f) / 1.055f, 2.4f);
 		}
+
 		obj[y][x] = linear * 255.0f;
 		return;
 	}
@@ -117,23 +118,8 @@ T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, f
 	if (y >= height || x >= width)
 		return T();
 
-	if (gamma == 0)
-	{
-		float srgb;
-		float pixel = obj[y][x];
-		pixel /= 255.0f;
-		if (pixel <= 0.0031308f) {
-			srgb = pixel * 12.92f;
-		}
-		else {
-			srgb = 1.055f * std::powf(pixel, 1.0f / 2.4f) - 0.055f;
-		}
-
-		return srgb*255.0f;
-	}
-
 	if (reverse)
-		return powf(obj[x][y] / 255.0, 1.0 / gamma) * 255.0;
+		return obj[x][y];
 	else
-		return powf(obj[y][x] / 255.0, 1.0 / gamma) * 255.0;
+		return obj[y][x];
 }
