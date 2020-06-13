@@ -431,7 +431,7 @@ p6_data p6_list::rgb_to_hsv(p6_data value)
 
 	h = roundf(h * 255.0f / 360.0f);
 	s = roundf(s * 255.0f);
-	v = roundf(v * cmax * 255.0f);
+	v = roundf(v * 255.0f);
 
 	if (h > 255)
 		h = 255;
