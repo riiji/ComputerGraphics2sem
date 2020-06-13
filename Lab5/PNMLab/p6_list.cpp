@@ -177,9 +177,11 @@ vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, in
 			{
 				int ma = max(get<0>(pixels[i][j]), max(get<1>(pixels[i][j]), get<2>(pixels[i][j])));
 				int mi = min(get<0>(pixels[i][j]), min(get<1>(pixels[i][j]), get<2>(pixels[i][j])));
+
 				pixel_sum += ma;
 				highest_pixel = max(highest_pixel, ma);
 				lowest_pixel = min(lowest_pixel, mi);
+
 				++distribution[ma];
 			}
 		}
@@ -191,33 +193,36 @@ vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, in
 	int highest_pixels_for_remove = pixels_for_remove;
 	int lowest_pixels_for_remove = pixels_for_remove;
 
-	for (int i = 0; i < 255; ++i)
+	if (lowest_pixels_for_remove > 0)
 	{
-		if (distribution[i] > lowest_pixels_for_remove)
+		for (int i = 0; i < 255; ++i)
 		{
-			on_remove[i] += lowest_pixels_for_remove;
-			lowest_pixel_after_remove = i;
-			break;
+			if (distribution[i] > lowest_pixels_for_remove)
+			{
+				on_remove[i] += lowest_pixels_for_remove;
+				lowest_pixel_after_remove = i;
+				break;
+			}
+			else
+			{
+				lowest_pixels_for_remove -= distribution[i];
+				on_remove[i] += distribution[i];
+			}
 		}
-		else
-		{
-			lowest_pixels_for_remove -= distribution[i];
-			on_remove[i] += distribution[i];
-		}
-	}
 
-	for (int i = 255; i >= 0; --i)
-	{
-		if (distribution[i] > highest_pixels_for_remove)
+		for (int i = 255; i >= 0; --i)
 		{
-			on_remove[i] += highest_pixels_for_remove;
-			highest_pixel_after_remove = i;
-			break;
-		}
-		else
-		{
-			highest_pixels_for_remove -= distribution[i];
-			on_remove[i] += distribution[i];
+			if (distribution[i] > highest_pixels_for_remove)
+			{
+				on_remove[i] += highest_pixels_for_remove;
+				highest_pixel_after_remove = i;
+				break;
+			}
+			else
+			{
+				highest_pixels_for_remove -= distribution[i];
+				on_remove[i] += distribution[i];
+			}
 		}
 	}
 
@@ -229,7 +234,7 @@ vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, in
 	}
 
 	calculated_offset = lowest_pixel_after_remove;
-	calculated_multiplier = 255 / (highest_pixel_after_remove - lowest_pixel_after_remove);
+	calculated_multiplier = 255.0f / ((float)highest_pixel_after_remove - (float)lowest_pixel_after_remove);
 
 	return on_remove;
 }
