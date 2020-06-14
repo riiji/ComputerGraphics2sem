@@ -108,8 +108,6 @@ void p6_list::offset(float off, float multiplier, bool YCbCr)
 		{
 			if (YCbCr)
 			{
-				int brightness = get<0>(pixels[i][j]);
-
 				int y = get<0>(pixels[i][j]);
 				int cb = get<1>(pixels[i][j]);
 				int cr = get<2>(pixels[i][j]);
@@ -149,17 +147,21 @@ void p6_list::offset(float off, float multiplier, bool YCbCr)
 
 }
 
-vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, int& calculated_offset, float& calculated_multiplier)
+void p6_list::calculate_distribution(bool YCbCr, float ignore_percent, int& calculated_offset, float& calculated_multiplier)
 {
 	int highest_pixel = 0;
 	int lowest_pixel = 255;
 	long long pixel_sum = 0;
 	long long ignore_value = 0;
 	int pixel_count = height * width;
-	int pixels_for_remove = pixel_count * ignore_percent;
+	int pixels_for_remove = 0;
+	
+	if (!YCbCr)
+		pixels_for_remove = pixel_count * 3.0f * ignore_percent;
+	else
+		pixels_for_remove = pixel_count * ignore_percent;
 
 	vector<int> distribution(256);
-	vector<int> on_remove(256);
 
 	for (int i = 0; i < height; ++i)
 	{
@@ -167,7 +169,6 @@ vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, in
 		{
 			if (YCbCr)
 			{
-				pixel_sum += get<0>(pixels[i][j]);
 				highest_pixel = max(highest_pixel, (int)get<0>(pixels[i][j]));
 				lowest_pixel = min(lowest_pixel, (int)get<0>(pixels[i][j]));
 				++distribution[get<0>(pixels[i][j])];
@@ -175,68 +176,80 @@ vector<int> p6_list::calculate_distribution(bool YCbCr, float ignore_percent, in
 
 			else
 			{
+				unsigned char r = get<0>(pixels[i][j]);
+				unsigned char g = get<1>(pixels[i][j]);
+				unsigned char b = get<2>(pixels[i][j]);
+
 				int ma = max(get<0>(pixels[i][j]), max(get<1>(pixels[i][j]), get<2>(pixels[i][j])));
 				int mi = min(get<0>(pixels[i][j]), min(get<1>(pixels[i][j]), get<2>(pixels[i][j])));
 
-				pixel_sum += ma;
 				highest_pixel = max(highest_pixel, ma);
 				lowest_pixel = min(lowest_pixel, mi);
 
-				++distribution[ma];
+				++distribution[r];
+				++distribution[g];
+				++distribution[b];
 			}
 		}
 	}
 
-	int highest_pixel_after_remove = highest_pixel;
-	int lowest_pixel_after_remove = lowest_pixel;
-
-	int highest_pixels_for_remove = pixels_for_remove;
-	int lowest_pixels_for_remove = pixels_for_remove;
-
-	if (lowest_pixels_for_remove > 0)
+	if (ignore_percent == 0)
 	{
+		if (highest_pixel == lowest_pixel)
+		{
+			calculated_offset = 0;
+			calculated_multiplier = 1;
+			return;
+		}
+		else
+		{
+			calculated_offset = lowest_pixel;
+			calculated_multiplier = 255.0f / ((float)highest_pixel - (float)lowest_pixel);
+			return;
+		}
+	}
+
+	if (ignore_percent > 0)
+	{
+		float pixel_remove_count = pixels_for_remove;
+		int highest_pixel_after_remove = 0;
+		int lowest_pixel_after_remove = 255;
+
 		for (int i = 0; i < 255; ++i)
 		{
-			if (distribution[i] > lowest_pixels_for_remove)
+			if (distribution[i] > pixel_remove_count)
 			{
-				on_remove[i] += lowest_pixels_for_remove;
 				lowest_pixel_after_remove = i;
 				break;
 			}
 			else
-			{
-				lowest_pixels_for_remove -= distribution[i];
-				on_remove[i] += distribution[i];
-			}
+				pixel_remove_count -= distribution[i];
 		}
+
+		pixel_remove_count = pixels_for_remove;
 
 		for (int i = 255; i >= 0; --i)
 		{
-			if (distribution[i] > highest_pixels_for_remove)
+			if (distribution[i] > pixel_remove_count)
 			{
-				on_remove[i] += highest_pixels_for_remove;
 				highest_pixel_after_remove = i;
 				break;
 			}
 			else
-			{
-				highest_pixels_for_remove -= distribution[i];
-				on_remove[i] += distribution[i];
-			}
+				pixel_remove_count -= distribution[i];
 		}
+
+		if (highest_pixel_after_remove == lowest_pixel_after_remove)
+		{
+			calculated_offset = 0;
+			calculated_multiplier = 1;
+			return;
+		}
+
+		calculated_offset = lowest_pixel_after_remove;
+		calculated_multiplier = 255.0f / ((float)highest_pixel_after_remove - (float)lowest_pixel_after_remove);
+		return;
 	}
-
-	if (highest_pixel_after_remove == lowest_pixel_after_remove)
-	{
-		calculated_offset = 0;
-		calculated_multiplier = 1;
-		return on_remove;
-	}
-
-	calculated_offset = lowest_pixel_after_remove;
-	calculated_multiplier = 255.0f / ((float)highest_pixel_after_remove - (float)lowest_pixel_after_remove);
-
-	return on_remove;
 }
 
 vector<vector<p6_data>> p6_list::combine(vector<vector<vector<p5_data>>>& xyz)
@@ -666,9 +679,9 @@ p6_data p6_list::rgb_to_ycbcr601(p6_data value)
 	float g = get<1>(value) / 255.0f;
 	float b = get<2>(value) / 255.0f;
 
-	float kb = 0.299f;
-	float kr = 0.587f;
-	float kg = 0.114f;
+	float kb = 0.114f;
+	float kr = 0.299f;
+	float kg = 0.587f;
 
 	float y, cb, cr;
 
@@ -714,9 +727,9 @@ p6_data p6_list::ycbcr601_to_rgb(p6_data value)
 	float cb = get<1>(value) / 255.0f - 0.5f;
 	float cr = get<2>(value) / 255.0f - 0.5f;
 
-	float kb = 0.299;
-	float kr = 0.587;
-	float kg = 0.114;
+	float kb = 0.114;
+	float kr = 0.299;
+	float kg = 0.587;
 
 	float r, g, b;
 

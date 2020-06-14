@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 
 		if (convertion == 0)
 		{
-			auto pixels_for_remove = p6->calculate_distribution(false, 0, fake, fake2);
+			p6->calculate_distribution(false, 0, fake, fake2);
 			p6->offset(offset, multiplier, false);
 		}
 
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 		{
 			p6->convert("RGB", "YCbCr.601");
 
-			auto pixels_for_remove = p6->calculate_distribution(true, 0, fake, fake2);
+			p6->calculate_distribution(true, 0, fake, fake2);
 			p6->offset(offset, multiplier, true);
 
 			p6->convert("YCbCr.601", "RGB");
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 
 		if (convertion == 2)
 		{
-			auto pixels_for_remove = p6->calculate_distribution(false, 0, offset, multiplier);
+			p6->calculate_distribution(false, 0, offset, multiplier);
 			p6->offset(offset, multiplier, false);
 		}
 
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 		{
 			p6->convert("RGB", "YCbCr.601");
 
-			auto pixels_for_remove = p6->calculate_distribution(true, 0, offset, multiplier);
+			p6->calculate_distribution(true, 0, offset, multiplier);
 			p6->offset(offset, multiplier, true);
 
 			p6->convert("YCbCr.601", "RGB");
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 
 		if (convertion == 4)
 		{
-			auto pixels_for_remove = p6->calculate_distribution(false, 0.0039f, offset, multiplier);
+			p6->calculate_distribution(false, 0.0039f, offset, multiplier);
 			p6->offset(offset, multiplier, false);
 		}
 
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 		{
 			p6->convert("RGB", "YCbCr.601");
 
-			auto pixels_for_remove = p6->calculate_distribution(true, 0.0039f, offset, multiplier);
+			p6->calculate_distribution(true, 0.0039f, offset, multiplier);
 			p6->offset(offset, multiplier, true);
 
 			p6->convert("YCbCr.601", "RGB");
@@ -135,7 +135,8 @@ int main(int argc, char* argv[])
 			pic.operator<<(os);
 		}
 
-		cout << offset << " " << multiplier;
+		if (convertion != 0 && convertion != 1)
+			cout << offset << " " << multiplier;
 	}
 	catch (exception e)
 	{

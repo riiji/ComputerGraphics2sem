@@ -31,8 +31,6 @@ public:
 	void ordered_dithering(float bit, float gamma);
 	void halftone_dithering(float bit, float gamma);
 	void no_dithering(float bit, float gamma);
-	void offset(float value, float multiplier);
-	vector<int> calculate_distribution(float ignore_percent, int& calculated_offset, float& calculated_multiplier);
 
 	void inverse_pixel() override;
 

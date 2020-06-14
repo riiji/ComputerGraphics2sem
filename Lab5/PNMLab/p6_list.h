@@ -22,7 +22,7 @@ public:
 	void inverse_pixel() override;
 	void convert(string from, string to);
 	void offset(float off, float multiplier, bool YCbCr);
-	vector<int> calculate_distribution(bool YCbCr, float ignore_percent, int& calculated_offset, float& calculated_multiplier);
+	void calculate_distribution(bool YCbCr, float ignore_percent, int& calculated_offset, float& calculated_multiplier);
 
 	static vector<vector<p6_data>> combine(vector<vector<vector<p5_data>>>& xyz);
 	static vector<vector<p6_data>> combine(vector<vector<p5_data>>& x, vector<vector<p5_data>>& y, vector<vector<p5_data>>& z);
