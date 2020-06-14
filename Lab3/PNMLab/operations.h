@@ -10,8 +10,8 @@ public:
 	static void turn_right(vector<vector<T>>& obj);
 	static void horizontal_reflect(vector<vector<T>>& obj);
 	static void vertical_reflect(vector<vector<T>>& obj);
-	static void set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse, float gamma);
-	static T get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, float gamma);
+	static void set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse);
+	static T get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse);
 };
 
 template <class T>
@@ -58,7 +58,7 @@ void operations<T>::vertical_reflect(vector<vector<T>>& obj)
 }
 
 template <class T>
-void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse, float gamma)
+void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, bool reverse)
 {
 	if (x < 0 || y < 0)
 		return;
@@ -69,45 +69,24 @@ void operations<T>::set_pixel(vector<vector<T>>& obj, int x, int y, T pixel, boo
 	if (y >= height || x >= width)
 		return;
 
-	if (gamma == 0)
-	{
-		auto linear = pixel / 255.0f;
-		if (linear <= 0.04045f) {
-			linear = linear / 12.92f;
-		}
-		else {
-			linear = std::powf((linear + 0.055f) / 1.055f, 2.4f);
-		}
-
-		obj[y][x] = linear * 255.0f;
-		return;
-	}
-
-	T new_pixel = pow((double)pixel / 255, (double)gamma) * 255;
-
-	if (new_pixel > 255)
-		new_pixel = 255;
-	else if (new_pixel < 0)
-		new_pixel = 0;
-
 	if (reverse)
 	{
 		if (y >= width || x >= height)
 			return;
 
-		obj[x][y] = new_pixel;
+		obj[x][y] = pixel;
 	}
 	else
 	{
 		if (y >= height || x >= width)
 			return;
 
-		obj[y][x] = new_pixel;
+		obj[y][x] = pixel;
 	}
 }
 
 template <class T>
-T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse, float gamma)
+T operations<T>::get_pixel(vector<vector<T>>& obj, int x, int y, bool reverse)
 {
 	if (x < 0 || y < 0)
 		return T();

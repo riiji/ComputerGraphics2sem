@@ -40,22 +40,24 @@ int main(int argc, char* argv[])
 		switch (gradient)
 		{
 		case 0: break;
-		case 1: p5->draw_horizontal_gradient(gamma); break;
+		case 1: p5->draw_horizontal_gradient(); break;
 		default: throw exception("invalid gradient value"); break;
 		}
 
 		switch (dithering)
 		{
-		case 0: p5->no_dithering(bit, gamma); break;
-		case 1: p5->ordered_dithering(bit, gamma); break;
-		case 2: p5->random_dithering(bit, gamma); break;
-		case 3: p5->floid_dithering(bit, gamma); break;
-		case 4: p5->jjn_dithering(bit, gamma); break;
-		case 5: p5->sierra_dithering(bit, gamma); break;
-		case 6: p5->atkinson_dithering(bit, gamma); break;
-		case 7: p5->halftone_dithering(bit, gamma); break;
+		case 0: p5->no_dithering(bit); break;
+		case 1: p5->ordered_dithering(bit); break;
+		case 2: p5->random_dithering(bit); break;
+		case 3: p5->floid_dithering(bit); break;
+		case 4: p5->jjn_dithering(bit); break;
+		case 5: p5->sierra_dithering(bit); break;
+		case 6: p5->atkinson_dithering(bit); break;
+		case 7: p5->halftone_dithering(bit); break;
 		default: throw exception("invalid dither type value"); break;
 		}
+		
+		p5->gamma_correction(gamma);
 
 		ofstream os(argv[2], ios::binary);
 
